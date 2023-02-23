@@ -1,0 +1,22 @@
+version: '1'
+services:
+  nodejs:
+    image: 'cloud_front:latest'
+    ports:
+      - '8080:8080'
+    depends_on:
+      - cloud_java
+    links:
+      - loud_java
+  cloud_java:
+    image: 'cloud_back:latest'
+    ports:
+      - '5500:5500'
+    depends_on:
+      - postgres
+    links:
+      - postgres
+  postgres:
+    image: 'postgres'
+    ports:
+      - '5432:5432'

@@ -1,19 +1,11 @@
 package com.example.cloud.service;
 
-import com.example.cloud.model.User;
-import com.example.cloud.repository.CloudRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Service
-public class CloudService {
+@Slf4j
+public class CloudServiceImpl implements CloudService {
 
-    private final CloudRepository repo;
 
-    public CloudService(CloudRepository repo) {
-        this.repo = repo;
-    }
-
-    public void authorize (User user){
-        repo.findById(user.getUserId());
-    }
 }

@@ -1,7 +1,16 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/db
+    url: jdbc:postgresql://localhost:5432/cloud
     username: postgres
     password: postgres
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    database: postgresql
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration
 server:
   port: 9090
+security:
+  jwt:
+    token:
+      secret-key: my-secret

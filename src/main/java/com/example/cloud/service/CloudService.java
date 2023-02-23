@@ -1,2 +1,5 @@
-package com.example.cloud.service;public interface CloudService {
+package com.example.cloud.service;
+
+public interface CloudService {
+
 }

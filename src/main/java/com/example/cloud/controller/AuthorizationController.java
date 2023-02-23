@@ -4,6 +4,7 @@ import com.example.cloud.model.Credential;
 import com.example.cloud.model.User;
 import com.example.cloud.security.UserAuthenticationProvider;
 import com.example.cloud.service.AuthenticationServiceImpl;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -12,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class CloudController {
+public class AuthorizationController {
 
     private static final String LOGIN_URL = "/login";
     private static final String CROSS_ORIGIN = "http://localhost:8080";
@@ -20,17 +21,18 @@ public class CloudController {
     private final AuthenticationServiceImpl authService;
     private final UserAuthenticationProvider userAuthenticationProvider;
 
-    public CloudController(AuthenticationServiceImpl authService, UserAuthenticationProvider userAuthenticationProvider) {
+    public AuthorizationController(AuthenticationServiceImpl authService, UserAuthenticationProvider userAuthenticationProvider) {
         this.authService = authService;
         this.userAuthenticationProvider = userAuthenticationProvider;
     }
 
     @PostMapping(value = LOGIN_URL, produces = PRODUCES_JSON)
-    @CrossOrigin (origins = CROSS_ORIGIN, allowCredentials = "true")
-    public ResponseEntity<String> authorize (@AuthenticationPrincipal @RequestBody Credential credential) {
+    @CrossOrigin(origins = CROSS_ORIGIN, allowCredentials = "true")
+    public ResponseEntity<String> authorize(@AuthenticationPrincipal @RequestBody Credential credential) {
         User user = authService.findUserByCredential(credential);
-        user.setToken(userAuthenticationProvider.createToken(credential.getLogin()));
-        System.out.println("{@auth-token@: " + user.getToken() + "}");
+        if (user != null) {
+            user.setToken(userAuthenticationProvider.createToken(credential.getLogin()));
+        }
         return ResponseEntity.ok("{\"auth-token\": " + "\"" + user.getToken() + "\"" + "}");
     }
 }
