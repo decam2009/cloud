@@ -1,5 +1,6 @@
 package com.example.cloud.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -32,6 +33,7 @@ public class User implements Serializable {
     private String home;
 
     @Transient
+    @JsonProperty ("auth-token")
     private String token;
 
     public Long getId() {
