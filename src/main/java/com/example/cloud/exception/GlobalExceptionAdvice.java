@@ -10,8 +10,8 @@ import java.util.NoSuchElementException;
 @ControllerAdvice
 public class GlobalExceptionAdvice {
 
-    private static final String BAD_CREDENTIALS = "Bad credentials";
-    private static final Integer ID = 0;
+    private static final String BAD_CREDENTIALS = "Bad Credentials";
+    private static final Integer ID = 400;
     @ExceptionHandler ({NullPointerException.class, NoSuchElementException.class})
     public ResponseEntity<BadCredentialsMessage> catchBadRequestException() {
         BadCredentialsMessage message = new BadCredentialsMessage(BAD_CREDENTIALS, ID);

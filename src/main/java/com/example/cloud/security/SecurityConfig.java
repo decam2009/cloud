@@ -7,8 +7,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -16,8 +16,15 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @EnableWebSecurity
 
 public class SecurityConfig implements WebMvcConfigurer {
+    private final UserAuthenticationProvider userAuthenticationProvider;
+    private final UserAuthenticationEntryPoint userAuthenticationEntryPoint;
     private static final String LOGIN_URL = "/login*";
     private final String ORIGIN_URL = "http://localhost:8080";
+
+    public SecurityConfig(UserAuthenticationProvider userAuthenticationProvider, UserAuthenticationEntryPoint userAuthenticationEntryPoint) {
+        this.userAuthenticationProvider = userAuthenticationProvider;
+        this.userAuthenticationEntryPoint = userAuthenticationEntryPoint;
+    }
 
     @Bean
     public SecurityFilterChain security(HttpSecurity http) throws Exception {
@@ -29,7 +36,10 @@ public class SecurityConfig implements WebMvcConfigurer {
                             .allowedOrigins(ORIGIN_URL)
                             .allowedMethods(String.valueOf(HttpMethod.POST));
                 })
-
+                .exceptionHandling().authenticationEntryPoint(userAuthenticationEntryPoint)
+                .and()
+                .addFilterBefore(new UsernamePasswordAuthFilter(userAuthenticationProvider), BasicAuthenticationFilter.class)
+                .addFilterBefore(new JWTAuthFilter(userAuthenticationProvider), UsernamePasswordAuthFilter.class)
                 .csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
@@ -42,18 +52,15 @@ public class SecurityConfig implements WebMvcConfigurer {
                                 .authenticated()
                                 .and()
                                 .logout(logout -> logout.permitAll()
-                                        .logoutSuccessHandler((request1, response, authentication) -> {response.setStatus(HttpServletResponse.SC_OK);}));
+                                        .logoutSuccessHandler((request1, response, authentication) -> {
+                                            response.setStatus(HttpServletResponse.SC_OK);
+                                        }));
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
                 });
 
         return http.build();
-    }
-
-    @Bean
-    public BCryptPasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
     }
 }
 

@@ -1,10 +1,10 @@
 package com.example.cloud.service;
 
-import com.example.cloud.model.Credential;
-import com.example.cloud.model.User;
+import com.example.cloud.entities.Credential;
+import com.example.cloud.entities.User;
 
 public interface AuthenticationService {
-    User findUserByCredentialLogin(String login);
+    User findUserByLogin(String login);
 
     User findUserByCredential(Credential credential);
 }
