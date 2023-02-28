@@ -13,8 +13,8 @@ server:
   error:
     include-message: always
     include-exception: true
-    include-stacktrace: never
+    include-stacktrace: always
 security:
   jwt:
     token:
-      secret-key: my-secret
+      secret-key: my-secret-key

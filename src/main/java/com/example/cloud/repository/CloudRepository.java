@@ -1,7 +1,8 @@
 package com.example.cloud.repository;
 
-import com.example.cloud.model.User;
-import org.springframework.data.repository.CrudRepository;
+import com.example.cloud.entities.Storage;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface CloudRepository extends CrudRepository<User, Long> {
+public interface CloudRepository extends JpaRepository<Storage, Long> {
+
 }
