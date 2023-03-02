@@ -1,14 +1,15 @@
 package com.example.cloud.controller;
 
 import com.example.cloud.entities.Credential;
-import com.example.cloud.model.Token;
 import com.example.cloud.entities.User;
+import com.example.cloud.model.Token;
 import com.example.cloud.security.UserAuthenticationProvider;
 import com.example.cloud.service.AuthenticationServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -41,7 +42,8 @@ public class AuthorizationController {
 
     @PostMapping(value = LOGOUT_URL)
     @CrossOrigin(origins = CROSS_ORIGIN, allowCredentials = ALLOW_CREDENTIALS_VALUE)
-    public ResponseEntity<Token> logout (@RequestBody Token token){
-        return ResponseEntity.ok(null);
+    public ResponseEntity<Void> logout (){
+        SecurityContextHolder.clearContext();
+        return ResponseEntity.noContent().build();
     }
 }

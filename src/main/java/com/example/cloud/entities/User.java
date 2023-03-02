@@ -1,16 +1,17 @@
 package com.example.cloud.entities;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.Setter;
+import jakarta.validation.constraints.Size;
+import lombok.*;
 
 import java.io.Serial;
 import java.io.Serializable;
 
-@Entity
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
+@Entity
 @Table(name = "users")
 public class User implements Serializable {
     @Serial
@@ -24,8 +25,10 @@ public class User implements Serializable {
     @PrimaryKeyJoinColumn
     private Credential credential;
     @NonNull
+    @Size(max = 100)
     private String name;
     @NonNull
+    @Size(max = 100)
     private String home;
     @Transient
     private String token;
