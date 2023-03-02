@@ -3,6 +3,7 @@ package com.example.cloud.entities;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.hibernate.annotations.Type;
 import org.springframework.web.bind.annotation.RequestPart;
 
 import java.io.Serial;
@@ -11,6 +12,8 @@ import java.io.Serializable;
 @RequiredArgsConstructor
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
 @Entity
 @Table(name = "storage")
 public class Storage implements Serializable {
@@ -28,7 +31,7 @@ public class Storage implements Serializable {
     @NonNull
     private String type;
     @NonNull
-    private String fileHash;
+    private Long size;
     @NonNull
     @Lob
     private byte[] data;

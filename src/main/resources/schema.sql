@@ -23,8 +23,8 @@ CREATE TABLE storage
     user_login VARCHAR(255),
     file_name  VARCHAR(100),
     type       VARCHAR(255),
-    file_hash  VARCHAR(255),
-    data       OID,
+    size       VARCHAR(255),
+    data       oid,
     CONSTRAINT pk_storage PRIMARY KEY (id)
 );
 
