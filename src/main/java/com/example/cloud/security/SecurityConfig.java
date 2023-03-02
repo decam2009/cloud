@@ -19,6 +19,7 @@ public class SecurityConfig implements WebMvcConfigurer {
     private final UserAuthenticationProvider userAuthenticationProvider;
     private final UserAuthenticationEntryPoint userAuthenticationEntryPoint;
     private static final String LOGIN_URL = "/login*";
+    private static final String FILE_URL = "/file*";
     private final String ORIGIN_URL = "http://localhost:8080";
 
     public SecurityConfig(UserAuthenticationProvider userAuthenticationProvider, UserAuthenticationEntryPoint userAuthenticationEntryPoint) {
@@ -33,8 +34,12 @@ public class SecurityConfig implements WebMvcConfigurer {
                 .cors(httpSecurityCorsConfigurer -> {
                     CorsRegistry registry = new CorsRegistry();
                     registry.addMapping("/**")
+                            .allowCredentials(true)
                             .allowedOrigins(ORIGIN_URL)
-                            .allowedMethods(String.valueOf(HttpMethod.POST));
+                            .allowedMethods(String.valueOf(HttpMethod.POST),
+                                    String.valueOf(HttpMethod.DELETE),
+                                    String.valueOf(HttpMethod.GET),
+                                    String.valueOf(HttpMethod.PUT));
                 })
                 .exceptionHandling().authenticationEntryPoint(userAuthenticationEntryPoint)
                 .and()
@@ -59,7 +64,6 @@ public class SecurityConfig implements WebMvcConfigurer {
                         throw new RuntimeException(e);
                     }
                 });
-
         return http.build();
     }
 }
