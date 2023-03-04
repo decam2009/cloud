@@ -4,14 +4,16 @@ import com.example.cloud.entities.Storage;
 import com.example.cloud.entities.User;
 import com.example.cloud.model.FileListResponse;
 import com.example.cloud.service.CloudServiceImpl;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -20,7 +22,8 @@ public class StorageController {
 
     private static final String CROSS_ORIGIN = "http://localhost:8080";
     private static final String ALLOW_CREDENTIALS_VALUE = "true";
-    private static final String VALUE_MAPPING = "/file";
+    private static final String FILE_MAPPING = "/file";
+    private static final String LIST_MAPPING = "/list";
 
     CloudServiceImpl cloudService;
 
@@ -28,37 +31,39 @@ public class StorageController {
         this.cloudService = cloudService;
     }
 
-    @PostMapping(value = VALUE_MAPPING)
+    @PostMapping(value = FILE_MAPPING)
     @Transactional
     @CrossOrigin(origins = CROSS_ORIGIN, allowCredentials = ALLOW_CREDENTIALS_VALUE)
     public ResponseEntity<Object> upload(@AuthenticationPrincipal User user,
                                          @RequestParam(value = "filename") String filename,
-                                         @RequestBody MultipartFile file) {
+                                         @RequestBody MultipartFile file) throws IOException {
         cloudService.upload(user.getLogin(), file);
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping(value = VALUE_MAPPING)
+    @DeleteMapping(value = FILE_MAPPING)
     @Transactional
     @CrossOrigin(origins = CROSS_ORIGIN, allowCredentials = ALLOW_CREDENTIALS_VALUE)
-    public ResponseEntity<Object> delete(@AuthenticationPrincipal User user,
-                                         @RequestParam(value = "filename") String filename) {
+    public ResponseEntity<Void> delete(@RequestParam(value = "filename") String filename) {
         cloudService.delete(filename);
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/list")
+    @GetMapping(LIST_MAPPING)
     @Transactional
     @CrossOrigin(origins = CROSS_ORIGIN, allowCredentials = ALLOW_CREDENTIALS_VALUE)
-    public ResponseEntity<List<FileListResponse>> showAll(@AuthenticationPrincipal User user,
-                                                          @RequestParam(value = "limit") Integer limit) {
+    public ResponseEntity<List<FileListResponse>> showAll(@RequestParam(value = "limit") Integer limit) {
         List<Storage> storages = cloudService.showAllByLimit(limit);
-        List<FileListResponse> files = new ArrayList<>(storages.size());
+        List<FileListResponse> result = storages.stream()
+                .map(x -> new FileListResponse(x.getFileName(), x.getSize())).toList();
+        return ResponseEntity.ok(result);
+    }
 
-        for (Storage s : storages) {
-            FileListResponse file = new FileListResponse(s.getFileName(), s.getSize());
-            files.add(file);
-        }
-        return ResponseEntity.ok(files);
+    @Transactional
+    @GetMapping(value = FILE_MAPPING, produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    @CrossOrigin(origins = CROSS_ORIGIN, allowCredentials = ALLOW_CREDENTIALS_VALUE)
+    public ResponseEntity<Void> download(@RequestParam(value = "filename") String filename, HttpServletResponse response) throws IOException {
+        cloudService.download(filename, response);
+        return ResponseEntity.ok().build();
     }
 }

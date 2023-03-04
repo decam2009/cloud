@@ -15,6 +15,7 @@ import java.io.Serializable;
 @Getter
 @Setter
 @Entity
+@Builder
 @Table(name = "storage")
 public class Storage implements Serializable {
     @Serial
@@ -31,8 +32,10 @@ public class Storage implements Serializable {
     @NonNull
     private String type;
     @NonNull
-    private Long size;
+    private String hash;
     @NonNull
+    private Long size;
     @Lob
     private byte[] data;
+
 }

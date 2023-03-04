@@ -7,11 +7,11 @@ services:
     depends_on:
       - cloud_java
     links:
-      - loud_java
+      - cloud_java
   cloud_java:
     image: 'cloud_back:latest'
     ports:
-      - '5500:5500'
+      - '9090:9090'
     depends_on:
       - postgres
     links:

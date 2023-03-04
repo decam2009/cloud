@@ -4,20 +4,24 @@ import com.example.cloud.entities.Storage;
 import com.example.cloud.entities.User;
 import com.example.cloud.repository.CloudRepository;
 import com.example.cloud.repository.UserRepository;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
+import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
+import org.springframework.util.DigestUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 @Service
 @Slf4j
 public class CloudServiceImpl implements CloudService {
-    @Value("${app.nfs.path:/storage}")
-    private String nfsPath;
     private final UserRepository userRepo;
     private final CloudRepository cloudRepo;
 
@@ -27,18 +31,27 @@ public class CloudServiceImpl implements CloudService {
     }
 
     @Override
-    public Storage upload(String login, MultipartFile file) {
+    public void upload(String login, MultipartFile file) throws IOException {
         User user = userRepo.findUserByLogin(login);
         Storage storage = cloudRepo.findStorageByFileName(file.getOriginalFilename());
         if (storage == null) {
             String filename = file.getOriginalFilename();
             String type = file.getContentType();
-            byte[] data = filename.getBytes();
+            String hash = DigestUtils.md5DigestAsHex(file.getBytes());
+            byte[] data = file.getBytes();
             Long size = file.getSize();
-            storage = cloudRepo.save(new Storage(user, filename, type, size, data));
+            assert type != null;
+            assert filename != null;
+            cloudRepo.save(Storage.builder()
+                    .user(user)
+                    .fileName(filename)
+                    .type(type)
+                    .hash(hash)
+                    .size(size)
+                    .data(data)
+                    .build());
         }
         log.info("User {} created new file", user.getId());
-        return storage;
     }
 
     @Override
@@ -47,15 +60,13 @@ public class CloudServiceImpl implements CloudService {
     }
 
     @Override
-    public Storage download(String filename) {
-        return null;
+    public void download(String filename, HttpServletResponse response) throws IOException {
+        Storage storage = cloudRepo.findStorageByFileName(filename);
+        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + storage.getFileName() + "\"");
+        response.setContentType(storage.getType());
+        InputStream is = new ByteArrayInputStream(storage.getData());
+        IOUtils.copy(is, response.getOutputStream());
     }
-
-    @Override
-    public Storage edit(String filename) {
-        return null;
-    }
-
 
     @Override
     public List<Storage> showAllByLimit(Integer limit) {
