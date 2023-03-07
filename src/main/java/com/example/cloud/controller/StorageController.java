@@ -6,6 +6,7 @@ import com.example.cloud.model.FileListResponse;
 import com.example.cloud.service.CloudServiceImpl;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -31,26 +32,26 @@ public class StorageController {
         this.cloudService = cloudService;
     }
 
-    @PostMapping(value = FILE_MAPPING)
     @Transactional
+    @PostMapping(value = FILE_MAPPING)
     @CrossOrigin(origins = CROSS_ORIGIN, allowCredentials = ALLOW_CREDENTIALS_VALUE)
-    public ResponseEntity<Object> upload(@AuthenticationPrincipal User user,
-                                         @RequestParam(value = "filename") String filename,
-                                         @RequestBody MultipartFile file) throws IOException {
+    public ResponseEntity<Void> upload(@AuthenticationPrincipal User user,
+                                       @RequestParam(value = "filename") String filename,
+                                       @RequestBody MultipartFile file) throws IOException {
         cloudService.upload(user.getLogin(), file);
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping(value = FILE_MAPPING)
     @Transactional
+    @DeleteMapping(value = FILE_MAPPING)
     @CrossOrigin(origins = CROSS_ORIGIN, allowCredentials = ALLOW_CREDENTIALS_VALUE)
     public ResponseEntity<Void> delete(@RequestParam(value = "filename") String filename) {
         cloudService.delete(filename);
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping(LIST_MAPPING)
     @Transactional
+    @GetMapping(LIST_MAPPING)
     @CrossOrigin(origins = CROSS_ORIGIN, allowCredentials = ALLOW_CREDENTIALS_VALUE)
     public ResponseEntity<List<FileListResponse>> showAll(@RequestParam(value = "limit") Integer limit) {
         List<Storage> storages = cloudService.showAllByLimit(limit);

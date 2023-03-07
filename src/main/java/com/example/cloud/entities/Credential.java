@@ -9,6 +9,7 @@ import java.io.Serializable;
 
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Getter
 @Setter
 @Entity
