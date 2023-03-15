@@ -26,7 +26,7 @@ CREATE TABLE if not exists storage
     type       VARCHAR(255),
     hash       VARCHAR(255),
     size       BIGINT,
-    data       BIGINT,
+    data       oid,
     CONSTRAINT pk_storage PRIMARY KEY (id)
 );
 
