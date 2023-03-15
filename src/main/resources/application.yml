@@ -12,6 +12,9 @@ spring:
     multipart:
       max-file-size: 30MB
       max-request-size: 30MB
+  sql:
+    init:
+      mode: always
 server:
   port: 9090
   error:
