@@ -5,6 +5,7 @@ import com.example.cloud.entities.User;
 import com.example.cloud.repository.CloudRepository;
 import com.example.cloud.repository.UserRepository;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.data.domain.PageRequest;
@@ -30,6 +31,7 @@ public class CloudServiceImpl implements CloudService {
         this.cloudRepo = cloudRepository;
     }
 
+    @Transactional
     @Override
     public void upload(String login, MultipartFile file) throws IOException {
         User user = userRepo.findUserByLogin(login);
@@ -54,11 +56,13 @@ public class CloudServiceImpl implements CloudService {
         log.info("User {} created new file", user.getId());
     }
 
+    @Transactional
     @Override
     public void delete(String filename) {
         cloudRepo.deleteByFileName(filename);
     }
 
+    @Transactional
     @Override
     public void download(String filename, HttpServletResponse response) throws IOException {
         Storage storage = cloudRepo.findStorageByFileName(filename);
@@ -68,6 +72,7 @@ public class CloudServiceImpl implements CloudService {
         IOUtils.copy(is, response.getOutputStream());
     }
 
+    @Transactional
     @Override
     public List<Storage> showAllByLimit(Integer limit) {
         Pageable pageable = PageRequest.of(0, limit);

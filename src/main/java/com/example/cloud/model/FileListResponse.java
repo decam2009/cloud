@@ -4,6 +4,6 @@ import lombok.*;
 @Data
 @AllArgsConstructor
 public class FileListResponse {
-    String filename;
-    Long size;
+    private final String filename;
+    private final Long size;
 }

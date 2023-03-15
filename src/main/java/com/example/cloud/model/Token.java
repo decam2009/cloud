@@ -8,7 +8,7 @@ import lombok.Data;
 @Builder
 public class Token {
     @JsonProperty("auth-token")
-    private String value;
+    private final String value;
 
     public Token(String value) {
         this.value = value;

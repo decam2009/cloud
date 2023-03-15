@@ -32,7 +32,6 @@ public class StorageController {
         this.cloudService = cloudService;
     }
 
-    @Transactional
     @PostMapping(value = FILE_MAPPING)
     @CrossOrigin(origins = CROSS_ORIGIN, allowCredentials = ALLOW_CREDENTIALS_VALUE)
     public ResponseEntity<Void> upload(@AuthenticationPrincipal User user,
@@ -42,7 +41,6 @@ public class StorageController {
         return ResponseEntity.ok().build();
     }
 
-    @Transactional
     @DeleteMapping(value = FILE_MAPPING)
     @CrossOrigin(origins = CROSS_ORIGIN, allowCredentials = ALLOW_CREDENTIALS_VALUE)
     public ResponseEntity<Void> delete(@RequestParam(value = "filename") String filename) {
@@ -50,7 +48,6 @@ public class StorageController {
         return ResponseEntity.ok().build();
     }
 
-    @Transactional
     @GetMapping(LIST_MAPPING)
     @CrossOrigin(origins = CROSS_ORIGIN, allowCredentials = ALLOW_CREDENTIALS_VALUE)
     public ResponseEntity<List<FileListResponse>> showAll(@RequestParam(value = "limit") Integer limit) {
@@ -60,7 +57,6 @@ public class StorageController {
         return ResponseEntity.ok(result);
     }
 
-    @Transactional
     @GetMapping(value = FILE_MAPPING, produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     @CrossOrigin(origins = CROSS_ORIGIN, allowCredentials = ALLOW_CREDENTIALS_VALUE)
     public ResponseEntity<Void> download(@RequestParam(value = "filename") String filename, HttpServletResponse response) throws IOException {
